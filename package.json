@@ -1,0 +1,38 @@
+{
+  "name": "nodejs-express-todo-demo",
+  "version": "1.0.0",
+  "description": "Sample TODO application written with Node.js and Express",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robogeek/nodejs-express-todo-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/robogeek/nodejs-express-todo-demo/issues"
+  },
+  "homepage": "https://github.com/robogeek/nodejs-express-todo-demo#readme",
+  "dependencies": {
+    "bootstrap": "^5.0.0-alpha1",
+    "cookie-parser": "^1.4.5",
+    "cross-env": "^7.0.2",
+    "cross-var": "^1.1.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "express-session-sequelize": "^2.3.0",
+    "helmet": "^4.1.0",
+    "js-yaml": "^3.14.0",
+    "morgan": "^1.10.0",
+    "nunjucks": "^3.2.2",
+    "popper.js": "^1.16.1",
+    "sequelize": "^6.3.4",
+    "socket.io": "^2.3.0",
+    "socket.io-redis": "^5.3.0",
+    "sqlite3": "^5.0.0"
+  }
+}
