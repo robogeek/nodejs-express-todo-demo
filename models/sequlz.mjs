@@ -3,8 +3,8 @@ import { default as jsyaml } from 'js-yaml';
 import Sequelize from 'sequelize';
 
 import { default as DBG } from 'debug';
-const debug = DBG('notes:seqlz');
-const error = DBG('notes:error-seqlz');
+const debug = DBG('todos:seqlz');
+const error = DBG('todos:error-seqlz');
 import util from 'util';
 
 var sequlz;

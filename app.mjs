@@ -1,7 +1,7 @@
 import { default as express } from 'express';
 import { default as DBG } from 'debug';
-const debug = DBG('notes:debug'); 
-const dbgerror = DBG('notes:error');
+const debug = DBG('todos:debug');
+const dbgerror = DBG('todos:error');
 import { default as logger } from 'morgan';
 import { default as cookieParser } from 'cookie-parser';
 import { default as bodyParser } from 'body-parser';
