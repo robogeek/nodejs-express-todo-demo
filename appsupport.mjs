@@ -102,11 +102,11 @@ process.on('unhandledRejection', (reason, p) => {
     console.error(`Unhandled Rejection at: ${util.inspect(p)} reason: ${util.inspect(reason)}`);
 });
 
-import { NotesStore } from './models/notes-store.mjs';
+import { close as TodoClose } from './models/sequlz.mjs';
 
 async function catchProcessDeath() {
     debug('urk...');
-    await NotesStore.close();
+    await TodoClose();
     await server.close();
     process.exit(0);
 }

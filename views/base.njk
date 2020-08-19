@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {# Required meta tags #}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {# Bootstrap CSS #}
+    <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css">
+
+    {% block header %}
+    <title>{{ title }}</title>
+    {% endblock %}
+  </head>
+  <body>
+      
+    {% block content %}
+    Default page content
+    {% endblock %}
+
+    {# Optional JavaScript #}
+    {# Popper.js first, then Bootstrap JS #}
+    <script src="/assets/vendor/popper.js/popper.min.js"></script>
+    <script src="/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    {% block jscode %}
+    {% endblock %}
+  </body>
+</html>

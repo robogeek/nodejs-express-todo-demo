@@ -1,0 +1,6 @@
+dbname: todo 
+username: 
+password: 
+params: 
+    dialect: sqlite 
+    storage: todo.sqlite3 

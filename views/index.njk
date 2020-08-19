@@ -1,0 +1,36 @@
+{% extends "base.njk" %}
+
+{% block header %}
+<title>{{ title }}</title>
+{% endblock %}
+
+{% block content %}
+<button type="button" class="btn btn-primary" id="add-todo">Add</button>
+<ul class="list-group">
+{% for todo in todos %}
+    <li class="list-group-item">
+        <button type="button" class="btn">{{ todo.title }}</button>
+
+        make hidden area with {{ todo.body }}
+
+        make an up-down button with {{ todo.precedence }}
+
+        make a delete button
+    </li>
+{% else %}
+    <li class="list-group-item">Nothing here</li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+{% block jscode %}
+<script src="/socket.io/socket.io.js"></script> 
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+  console.log('socket.io starting');
+  var socket = io('/home'); 
+
+});
+</script>
+{% endblock %}
