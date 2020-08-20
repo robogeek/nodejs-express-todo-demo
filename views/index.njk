@@ -15,30 +15,33 @@
 {% for todo in todos %}
     <li class="list-group-item">
         <button type="button" class="btn todo-title"
-         data-toggle="collapse" data-target="#collapse{{ todo.id }}" 
-         aria-expanded="false" aria-controls="collapse{{ todo.id }}"
+        data-toggle="collapse" data-target="#collapse{{ todo.id }}" 
+        aria-expanded="false" aria-controls="collapse{{ todo.id }}"
         >{{ todo.title }}</button>
+        <div class="float-right">
 
-        {% if todo.precedence == 1 %}
-        <span class="badge bg-success">Low</span>
-        {% elseif todo.precedence == 2 %}
-        <span class="badge bg-warning text-dark">Medium</span>
-        {% elseif todo.precedence == 3 %}
-        <span class="badge bg-danger">High</span>
-        {% endif %}
+            {% if todo.precedence == 1 %}
+            <span class="badge bg-success">Low</span>
+            {% elseif todo.precedence == 2 %}
+            <span class="badge bg-warning text-dark">Medium</span>
+            {% elseif todo.precedence == 3 %}
+            <span class="badge bg-danger">High</span>
+            {% endif %}
 
-        <button type="button" class="btn">
-            <img src="/assets/vendor/bootstrap/icons/pencil.svg" alt="" 
-                    width="32" height="32" title="Edit">
-        </button>
+            <button type="button" class="btn">
+                <img src="/assets/vendor/bootstrap/icons/pencil.svg" alt="" 
+                        width="32" height="32" title="Edit">
+            </button>
 
-        <button type="button" class="btn">
-            <img src="/assets/vendor/bootstrap/icons/trash.svg" alt="" 
-                    width="32" height="32" title="Delete">
-        </button>
+            <button type="button" class="btn">
+                <img src="/assets/vendor/bootstrap/icons/trash.svg" alt="" 
+                        width="32" height="32" title="Delete">
+            </button>
+        </div>
 
-        <div class="todo-body collapse" id="collapse{{ todo.id }}">
+        <div class="todo-body collapse row" id="collapse{{ todo.id }}">
             {{ todo.body }}
+        </div>
         </div>
     </li>
 {% else %}
