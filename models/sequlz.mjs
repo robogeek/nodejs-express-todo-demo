@@ -72,3 +72,25 @@ export async function close() {
     sequlz = undefined;
 }
 
+function sanitizedTodo(todo) {
+    return {
+        title: todo.title,
+        body: todo.body,
+        precedence: todo.precedence
+    }
+}
+
+export async function getTODOs() {
+    await connectDB();
+    let todos = await SQTodo.findAll();
+    return todos.map(todo => {
+        return sanitizedTodo(todo);
+    });
+}
+
+export async function createTODO(todo) {
+    await connectDB();
+    const newmsg = await SQTodo.create({
+        title: todo.title, body: todo.body, precedence: todo.precedence
+    });
+}

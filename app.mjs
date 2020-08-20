@@ -48,7 +48,7 @@ app.set('view engine', 'njk')
 app.use(logger(process.env.REQUEST_LOG_FORMAT || 'dev', {
     // immediate: true,
 }));
-app.use(helmet());
+// app.use(helmet());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

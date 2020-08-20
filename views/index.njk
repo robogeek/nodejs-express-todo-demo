@@ -5,7 +5,9 @@
 {% endblock %}
 
 {% block content %}
-<button type="button" class="btn btn-primary" id="add-todo">Add</button>
+<button type="button"
+        class="btn btn-primary" id="add-todo"
+        data-toggle="modal" data-target="#addTodoModal">Add Todo</button>
 <ul class="list-group">
 {% for todo in todos %}
     <li class="list-group-item">
@@ -21,6 +23,77 @@
     <li class="list-group-item">Nothing here</li>
 {% endfor %}
 </ul>
+
+{# Add Todo Modal #}
+<div class="modal fade" id="addTodoModal" tabindex="-1"
+        role="dialog" aria-labelledby="addTodoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="addTodoModalLabel">Add TODO</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <label for="inputTodoTitle" class="form-label">Title</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="email" class="form-control"
+                                id="inputTodoTitle" aria-describedby="todoTitleHelp">
+                    </div>
+                    <div class="col-auto">
+                        <span id="todoTitleHelp" class="form-text">
+                            The main message about this TODO item
+                        </span>
+                    </div>
+                </div>
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <label for="inputTodoBody" class="form-label">Title</label>
+                    </div>
+                    <div class="col-auto">
+                        <textarea class="form-control" id="inputTodoBody"
+                                aria-describedby="todoBodyHelp"
+                                rows="3"></textarea>
+                    </div>
+                    <div class="col-auto">
+                        <span id="todoBodyHelp" class="form-text">
+                            Full description for this TODO item
+                        </span>
+                    </div>
+                </div>
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <label for="inputTodoPrecedence" class="form-label">Title</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="email" class="form-control"
+                                id="inputTodoPrecedence"
+                                aria-describedby="todoPrecedenceHelp">
+                    </div>
+                    <div class="col-auto">
+                        <span id="todoPrecedenceHelp" class="form-text">
+                            How important is this TODO item
+                        </span>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary"
+                    data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary"
+                    id="submitNewTodo">Save new TODO</button>
+        </div>
+        </div>
+    </div>
+</div>
+{# END Add Todo Modal #}
+
 {% endblock %}
 
 {% block jscode %}
@@ -28,9 +101,24 @@
 <script>
 document.addEventListener("DOMContentLoaded", function(){
 
-  console.log('socket.io starting');
-  var socket = io('/home'); 
+    console.log('socket.io starting');
+    var socket = io('/home');
 
+    document.getElementById('submitNewTodo').onclick = function() {
+        socket.emit('create-todo', {
+            title: document.getElementById('inputTodoTitle').value,
+            body: document.getElementById('inputTodoBody').value,
+            precedence: document.getElementById('inputTodoPrecedence').value,
+        },
+        response => {
+            var myModalEl = document.getElementById('addTodoModal');
+            var modal = bootstrap.Modal.getInstance(myModalEl);
+            modal.hide();
+            document.getElementById('inputTodoTitle').value = '';
+            document.getElementById('inputTodoBody').value = '';
+            document.getElementById('inputTodoPrecedence').value = '';
+        });
+    }
 });
 </script>
 {% endblock %}
