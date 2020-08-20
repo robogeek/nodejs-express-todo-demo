@@ -6,7 +6,7 @@
 
 {% block content %}
 <button type="button"
-        class="btn btn-primary" id="add-todo"
+        class="btn btn-light" id="add-todo"
         data-toggle="modal" data-target="#addTodoModal">
             <img src="/assets/vendor/bootstrap/icons/file-plus.svg" alt="" 
                     width="32" height="32" title="Add TODO">
@@ -26,6 +26,11 @@
         {% elseif todo.precedence == 3 %}
         <span class="badge bg-danger">High</span>
         {% endif %}
+
+        <button type="button" class="btn">
+            <img src="/assets/vendor/bootstrap/icons/pencil.svg" alt="" 
+                    width="32" height="32" title="Edit">
+        </button>
 
         <button type="button" class="btn">
             <img src="/assets/vendor/bootstrap/icons/trash.svg" alt="" 
