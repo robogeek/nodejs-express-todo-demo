@@ -18,6 +18,7 @@
   "homepage": "https://github.com/robogeek/nodejs-express-todo-demo#readme",
   "dependencies": {
     "bootstrap": "^5.0.0-alpha1",
+    "bootstrap-icons": "^1.0.0-alpha5",
     "cookie-parser": "^1.4.5",
     "cross-env": "^7.0.2",
     "cross-var": "^1.1.0",

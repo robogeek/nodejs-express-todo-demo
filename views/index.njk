@@ -7,7 +7,10 @@
 {% block content %}
 <button type="button"
         class="btn btn-primary" id="add-todo"
-        data-toggle="modal" data-target="#addTodoModal">Add Todo</button>
+        data-toggle="modal" data-target="#addTodoModal">
+            <img src="/assets/vendor/bootstrap/icons/file-plus.svg" alt="" 
+                    width="32" height="32" title="Add TODO">
+</button>
 <ul class="list-group">
 {% for todo in todos %}
     <li class="list-group-item">
@@ -25,7 +28,8 @@
         {% endif %}
 
         <button type="button" class="btn">
-            Delete {{ todo.id }}
+            <img src="/assets/vendor/bootstrap/icons/trash.svg" alt="" 
+                    width="32" height="32" title="Delete">
         </button>
 
         <div class="todo-body collapse" id="collapse{{ todo.id }}">
