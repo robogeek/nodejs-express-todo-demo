@@ -11,13 +11,26 @@
 <ul class="list-group">
 {% for todo in todos %}
     <li class="list-group-item">
-        <button type="button" class="btn">{{ todo.title }}</button>
+        <button type="button" class="btn todo-title"
+         data-toggle="collapse" data-target="#collapse{{ todo.id }}" 
+         aria-expanded="false" aria-controls="collapse{{ todo.id }}"
+        >{{ todo.title }}</button>
 
-        make hidden area with {{ todo.body }}
+        {% if todo.precedence == 1 %}
+        <span class="badge bg-success">Low</span>
+        {% elseif todo.precedence == 2 %}
+        <span class="badge bg-warning text-dark">Medium</span>
+        {% elseif todo.precedence == 3 %}
+        <span class="badge bg-danger">High</span>
+        {% endif %}
 
-        make an up-down button with {{ todo.precedence }}
+        <button type="button" class="btn">
+            Delete {{ todo.id }}
+        </button>
 
-        make a delete button
+        <div class="todo-body collapse" id="collapse{{ todo.id }}">
+            {{ todo.body }}
+        </div>
     </li>
 {% else %}
     <li class="list-group-item">Nothing here</li>
@@ -45,35 +58,25 @@
                         <input type="email" class="form-control"
                                 id="inputTodoTitle" aria-describedby="todoTitleHelp">
                     </div>
-                    <div class="col-auto">
-                        <span id="todoTitleHelp" class="form-text">
-                            The main message about this TODO item
-                        </span>
-                    </div>
+                </div>
+                <div class="row g-3 align-items-center">
+                    <label for="inputTodoBody" class="form-label">Body</label>
+                    <textarea class="form-control" id="inputTodoBody"
+                            aria-describedby="todoBodyHelp"
+                            rows="3"></textarea>
                 </div>
                 <div class="row g-3 align-items-center">
                     <div class="col-auto">
-                        <label for="inputTodoBody" class="form-label">Title</label>
+                        <label for="inputTodoPrecedence" class="form-label">Precedence</label>
                     </div>
                     <div class="col-auto">
-                        <textarea class="form-control" id="inputTodoBody"
-                                aria-describedby="todoBodyHelp"
-                                rows="3"></textarea>
-                    </div>
-                    <div class="col-auto">
-                        <span id="todoBodyHelp" class="form-text">
-                            Full description for this TODO item
-                        </span>
-                    </div>
-                </div>
-                <div class="row g-3 align-items-center">
-                    <div class="col-auto">
-                        <label for="inputTodoPrecedence" class="form-label">Title</label>
-                    </div>
-                    <div class="col-auto">
-                        <input type="email" class="form-control"
-                                id="inputTodoPrecedence"
-                                aria-describedby="todoPrecedenceHelp">
+                        <select class="form-select" aria-label="Default select example"
+                            id="todoPrecedenceSelect">
+                            <option value="-1" selected>Select the precedence</option>
+                            <option value="1">Low</option>
+                            <option value="2">Medium</option>
+                            <option value="3">High</option>
+                        </select>
                     </div>
                     <div class="col-auto">
                         <span id="todoPrecedenceHelp" class="form-text">
@@ -105,10 +108,14 @@ document.addEventListener("DOMContentLoaded", function(){
     var socket = io('/home');
 
     document.getElementById('submitNewTodo').onclick = function() {
+        if (document.getElementById('todoPrecedenceSelect').value === "-1") {
+            console.error("Invalid precedence value");
+            return;
+        }
         socket.emit('create-todo', {
             title: document.getElementById('inputTodoTitle').value,
             body: document.getElementById('inputTodoBody').value,
-            precedence: document.getElementById('inputTodoPrecedence').value,
+            precedence: document.getElementById('todoPrecedenceSelect').value,
         },
         response => {
             var myModalEl = document.getElementById('addTodoModal');
@@ -116,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function(){
             modal.hide();
             document.getElementById('inputTodoTitle').value = '';
             document.getElementById('inputTodoBody').value = '';
-            document.getElementById('inputTodoPrecedence').value = '';
+            document.getElementById('todoPrecedenceSelect').value = '-1';
         });
     }
 });

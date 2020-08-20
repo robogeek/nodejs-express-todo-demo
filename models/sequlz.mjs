@@ -53,8 +53,8 @@ export async function connectDB() {
         debug(`connectDB authenticated`);
 
         SQTodo.init({
-            key: { type: Sequelize.DataTypes.STRING,
-                primaryKey: true, unique: true },
+            id: { type: Sequelize.INTEGER, autoIncrement: true,
+                primaryKey: true },
             title: Sequelize.DataTypes.STRING,
             body: Sequelize.DataTypes.TEXT,
             precedence: Sequelize.DataTypes.INTEGER
@@ -74,6 +74,7 @@ export async function close() {
 
 function sanitizedTodo(todo) {
     return {
+        id: todo.id,
         title: todo.title,
         body: todo.body,
         precedence: todo.precedence
