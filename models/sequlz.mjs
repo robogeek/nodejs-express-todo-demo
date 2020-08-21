@@ -86,7 +86,17 @@ export async function getTODOs() {
     let todos = await SQTodo.findAll();
     return todos.map(todo => {
         return sanitizedTodo(todo);
-    });
+    })
+    .sort(function compare(a, b) {
+        if (a.precedence < b.precedence) {
+          return 1;
+        }
+        if (a.precedence > b.precedence) {
+          return -1;
+        }
+        // a must be equal to b
+        return 0;
+      });
 }
 
 export async function createTODO(todo) {
