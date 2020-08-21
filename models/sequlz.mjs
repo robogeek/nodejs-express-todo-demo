@@ -96,6 +96,20 @@ export async function createTODO(todo) {
     });
 }
 
+export async function updateTODO(todo) {
+    await connectDB();
+    const msg = await SQTodo.findOne({ where: { id: todo.id } });
+    if (!msg) {
+        throw new Error(`No TODO found for ${todo.id}`);
+    } else {
+        await SQTodo.update({
+            title: todo.title, body: todo.body, precedence: todo.precedence
+        }, {
+            where: { id: todo.id }
+        });
+    }
+}
+
 export async function deleteTODO(id) {
     await connectDB();
     const todo = await SQTodo.findOne({ where: { id } });
