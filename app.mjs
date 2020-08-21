@@ -62,6 +62,8 @@ app.use('/assets/vendor/bootstrap/css', express.static(
     path.join(__dirname, 'node_modules', 'bootstrap', 'dist', 'css')));
 app.use('/assets/vendor/bootstrap/icons', express.static(
     path.join(__dirname, 'node_modules', 'bootstrap-icons', 'icons')));
+app.use('/assets/vendor/nunjucks', express.static(
+    path.join(__dirname, 'node_modules', 'nunjucks', 'browser')));
 
 app.use('/assets/vendor/popper.js', express.static(
     path.join(__dirname, 'node_modules', 'popper.js', 'dist', 'umd')));

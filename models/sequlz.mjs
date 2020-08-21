@@ -95,3 +95,11 @@ export async function createTODO(todo) {
         title: todo.title, body: todo.body, precedence: todo.precedence
     });
 }
+
+export async function deleteTODO(id) {
+    await connectDB();
+    const todo = await SQTodo.findOne({ where: { id } });
+    if (todo) {
+        todo.destroy();
+    }
+}

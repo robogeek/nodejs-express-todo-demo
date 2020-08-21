@@ -7,7 +7,7 @@ import DBG from 'debug';
 const debug = DBG('todos:home');
 const error = DBG('todos:error-home');
 
-import { getTODOs, createTODO } from '../models/sequlz.mjs';
+import { getTODOs, createTODO, deleteTODO } from '../models/sequlz.mjs';
 
 router.get('/', async (req, res, next) => {
     try {
@@ -30,10 +30,28 @@ export function init() {
             try {
                 debug(`socket create-todo ${util.inspect(newtodo)}`);
                 await createTODO(newtodo);
-                fn('ok');
+                fn(await getTODOs());
             } catch (err) {
                 error(`FAIL to create todo ${err.stack}`);
             }
         });
+
+        socket.on('get-todos', async (data, fn) => {
+            try {
+                fn(await getTODOs());
+            } catch (err) {
+                error(`FAIL to get todo ${err.stack}`);
+            }
+        } );
+
+        socket.on('delete-todo', async (data) => {
+            try {
+                debug(`delete-todo ${util.inspect(data)}`);
+                await deleteTODO(data.id);
+                socket.emit('new-todos', await getTODOs());
+            } catch (err) {
+                error(`FAIL to delete todo ${err.stack}`);
+            }
+        } );
     });
 }

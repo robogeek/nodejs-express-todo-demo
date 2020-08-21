@@ -11,42 +11,8 @@
             <img src="/assets/vendor/bootstrap/icons/file-plus.svg" alt="" 
                     width="32" height="32" title="Add TODO">
 </button>
-<ul class="list-group">
-{% for todo in todos %}
-    <li class="list-group-item">
-        <button type="button" class="btn todo-title"
-        data-toggle="collapse" data-target="#collapse{{ todo.id }}" 
-        aria-expanded="false" aria-controls="collapse{{ todo.id }}"
-        >{{ todo.title }}</button>
-        <div class="float-right">
-
-            {% if todo.precedence == 1 %}
-            <span class="badge bg-success">Low</span>
-            {% elseif todo.precedence == 2 %}
-            <span class="badge bg-warning text-dark">Medium</span>
-            {% elseif todo.precedence == 3 %}
-            <span class="badge bg-danger">High</span>
-            {% endif %}
-
-            <button type="button" class="btn">
-                <img src="/assets/vendor/bootstrap/icons/pencil.svg" alt="" 
-                        width="32" height="32" title="Edit">
-            </button>
-
-            <button type="button" class="btn">
-                <img src="/assets/vendor/bootstrap/icons/trash.svg" alt="" 
-                        width="32" height="32" title="Delete">
-            </button>
-        </div>
-
-        <div class="todo-body collapse row" id="collapse{{ todo.id }}">
-            {{ todo.body }}
-        </div>
-        </div>
-    </li>
-{% else %}
-    <li class="list-group-item">Nothing here</li>
-{% endfor %}
+<ul id="TODOlistGroup" class="list-group">
+<li class="list-group-item">.... please wait ....</li>
 </ul>
 
 {# Add Todo Modal #}
@@ -107,32 +73,6 @@
 {% endblock %}
 
 {% block jscode %}
-<script src="/socket.io/socket.io.js"></script> 
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-
-    console.log('socket.io starting');
-    var socket = io('/home');
-
-    document.getElementById('submitNewTodo').onclick = function() {
-        if (document.getElementById('todoPrecedenceSelect').value === "-1") {
-            console.error("Invalid precedence value");
-            return;
-        }
-        socket.emit('create-todo', {
-            title: document.getElementById('inputTodoTitle').value,
-            body: document.getElementById('inputTodoBody').value,
-            precedence: document.getElementById('todoPrecedenceSelect').value,
-        },
-        response => {
-            var myModalEl = document.getElementById('addTodoModal');
-            var modal = bootstrap.Modal.getInstance(myModalEl);
-            modal.hide();
-            document.getElementById('inputTodoTitle').value = '';
-            document.getElementById('inputTodoBody').value = '';
-            document.getElementById('todoPrecedenceSelect').value = '-1';
-        });
-    }
-});
-</script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/main.js"></script>
 {% endblock %}
