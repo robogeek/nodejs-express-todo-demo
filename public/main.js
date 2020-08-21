@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function(){
             document.getElementById('inputTodoBody').value = '';
             document.getElementById('todoPrecedenceSelect').value = '-1';
             document.getElementById('inputTodoID').value = '-1';
-            renderTODOS(newtodos);
+            // renderTODOS(newtodos);
         });
     }
 

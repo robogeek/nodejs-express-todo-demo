@@ -30,7 +30,10 @@ export function init() {
             try {
                 debug(`socket create-todo ${util.inspect(newtodo)}`);
                 await createTODO(newtodo);
-                fn(await getTODOs());
+                fn('ok');
+                let newtodos = await getTODOs();
+                debug('after create new-todos ', newtodos)
+                io.of('/home').emit('new-todos', newtodos);
             } catch (err) {
                 error(`FAIL to create todo ${err.stack}`);
             }
@@ -40,7 +43,10 @@ export function init() {
             try {
                 debug(`socket edit-todo ${util.inspect(newtodo)}`);
                 await updateTODO(newtodo);
-                fn(await getTODOs());
+                fn('ok');
+                let newtodos = await getTODOs();
+                debug('after edit new-todos ', newtodos)
+                io.of('/home').emit('new-todos', newtodos);
             } catch (err) {
                 error(`FAIL to create todo ${err.stack}`);
             }
@@ -58,7 +64,9 @@ export function init() {
             try {
                 debug(`delete-todo ${util.inspect(data)}`);
                 await deleteTODO(data.id);
-                socket.emit('new-todos', await getTODOs());
+                let newtodos = await getTODOs();
+                debug('after delete new-todos ', newtodos)
+                io.of('/home').emit('new-todos', newtodos);
             } catch (err) {
                 error(`FAIL to delete todo ${err.stack}`);
             }
