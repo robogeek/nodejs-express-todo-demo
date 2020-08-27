@@ -11,11 +11,6 @@ var sequlz;
 
 export class SQTodo extends Sequelize.Model {}
 
-export function dbHandle() {
-    if (sequlz) return sequlz;
-    return sequlz;
-}
-
 export async function connectDB() {
     if (typeof sequlz === 'undefined') {
         const yamltext = await fs.readFile(process.env.SEQUELIZE_CONNECT, 'utf8');

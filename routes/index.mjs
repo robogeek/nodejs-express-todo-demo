@@ -13,7 +13,6 @@ router.get('/', async (req, res, next) => {
     try {
         res.render('index', {
             title: 'Todos',
-            todos: await getTODOs()
         });
     } catch (err) {
         next(err);
@@ -25,6 +24,13 @@ export function init() {
     io.of('/home').on('connect', socket => {
         debug('socketio connection on /home');
 
+        socket.on('get-todos', async (data, fn) => {
+            try {
+                fn(await getTODOs());
+            } catch (err) {
+                error(`FAIL to get todo ${err.stack}`);
+            }
+        } );
 
         socket.on('create-todo', async (newtodo, fn) => {
             try {
@@ -51,14 +57,6 @@ export function init() {
                 error(`FAIL to create todo ${err.stack}`);
             }
         });
-
-        socket.on('get-todos', async (data, fn) => {
-            try {
-                fn(await getTODOs());
-            } catch (err) {
-                error(`FAIL to get todo ${err.stack}`);
-            }
-        } );
 
         socket.on('delete-todo', async (data) => {
             try {

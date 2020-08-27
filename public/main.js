@@ -1,5 +1,13 @@
 document.addEventListener("DOMContentLoaded", function(){
 
+    console.log('socket.io starting');
+    let socket = io('/home');
+
+    socket.emit('get-todos', { },
+    newtodos => { renderTODOS(newtodos); });
+
+    socket.on('new-todos', todos => { renderTODOS(todos); });
+
     // See: https://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript
     function empty(id) {
         const parent = document.getElementById(id);
@@ -61,12 +69,6 @@ document.addEventListener("DOMContentLoaded", function(){
         return null;
     };
 
-    console.log('socket.io starting');
-    var socket = io('/home');
-
-    socket.emit('get-todos', { },
-    newtodos => { renderTODOS(newtodos); });
-
     document.getElementById('submitNewTodo').onclick = function() {
         if (document.getElementById('todoPrecedenceSelect').value === "-1") {
             console.error("Invalid precedence value");
@@ -103,8 +105,6 @@ document.addEventListener("DOMContentLoaded", function(){
             // renderTODOS(newtodos);
         });
     }
-
-    socket.on('new-todos', todos => { renderTODOS(todos); });
 
     // Because the buttons in the list are dynamically added and removed
     // it is not effective to attach event listeners directly to the buttons.
