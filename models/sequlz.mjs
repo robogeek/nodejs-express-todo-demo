@@ -7,12 +7,18 @@ const debug = DBG('todos:seqlz');
 const error = DBG('todos:error-seqlz');
 import util from 'util';
 
-var sequlz;
+import { Todo } from './Todo.mjs';
 
 export class SQTodo extends Sequelize.Model {}
 
-export async function connectDB() {
-    if (typeof sequlz === 'undefined') {
+const _todo_sequlz = Symbol('sequlz');
+
+export class TodoStore {
+    constructor(sequlz) {
+        this[_todo_sequlz] = sequlz;
+    }
+
+    static async connect() {
         const yamltext = await fs.readFile(process.env.SEQUELIZE_CONNECT, 'utf8');
         const params = await jsyaml.safeLoad(yamltext, 'utf8');
         if (typeof process.env.SEQUELIZE_DBNAME !== 'undefined'
@@ -40,7 +46,7 @@ export async function connectDB() {
             params.params.dialect = process.env.SEQUELIZE_DBDIALECT;
         }
         debug(`connectDB ${util.inspect(params)}`);
-        sequlz = new Sequelize(params.dbname,
+        let sequlz = new Sequelize(params.dbname,
                         params.username, params.password,
                         params.params);
         debug(`connectDB connected`);
@@ -58,67 +64,56 @@ export async function connectDB() {
             modelName: 'SQTodo'
         });
         await SQTodo.sync();
+
+        return new TodoStore(sequlz);
     }
-    return sequlz;
-}
 
-export async function close() {
-    if (sequlz) sequlz.close();
-    sequlz = undefined;
-}
-
-function sanitizedTodo(todo) {
-    return {
-        id: todo.id,
-        title: todo.title,
-        body: todo.body,
-        precedence: todo.precedence
+    close() {
+        if (this[_todo_sequlz]) this[_todo_sequlz].close();
+        this[_todo_sequlz] = undefined;
     }
-}
 
-export async function getTODOs() {
-    await connectDB();
-    let todos = await SQTodo.findAll();
-    return todos.map(todo => {
-        return sanitizedTodo(todo);
-    })
-    .sort(function compare(a, b) {
-        if (a.precedence < b.precedence) {
-          return 1;
-        }
-        if (a.precedence > b.precedence) {
-          return -1;
-        }
-        // a must be equal to b
-        return 0;
-      });
-}
 
-export async function createTODO(todo) {
-    await connectDB();
-    const newmsg = await SQTodo.create({
-        title: todo.title, body: todo.body, precedence: todo.precedence
-    });
-}
-
-export async function updateTODO(todo) {
-    await connectDB();
-    const msg = await SQTodo.findOne({ where: { id: todo.id } });
-    if (!msg) {
-        throw new Error(`No TODO found for ${todo.id}`);
-    } else {
-        await SQTodo.update({
-            title: todo.title, body: todo.body, precedence: todo.precedence
-        }, {
-            where: { id: todo.id }
+    async getAll() {
+        let todos = await SQTodo.findAll();
+        return todos.map(todo => {
+            return (Todo.fromSQ(todo)).sanitized();
+        })
+        .sort(function compare(a, b) {
+            if (a.precedence < b.precedence) {
+            return 1;
+            }
+            if (a.precedence > b.precedence) {
+            return -1;
+            }
+            // a must be equal to b
+            return 0;
         });
     }
-}
 
-export async function deleteTODO(id) {
-    await connectDB();
-    const todo = await SQTodo.findOne({ where: { id } });
-    if (todo) {
-        todo.destroy();
+    async create(todo) {
+        await SQTodo.create({
+            title: todo.title, body: todo.body, precedence: todo.precedence
+        });
+    }
+
+    async update(todo) {
+        const msg = await SQTodo.findOne({ where: { id: todo.id } });
+        if (!msg) {
+            throw new Error(`No TODO found for ${todo.id}`);
+        } else {
+            await SQTodo.update({
+                title: todo.title, body: todo.body, precedence: todo.precedence
+            }, {
+                where: { id: todo.id }
+            });
+        }
+    }
+
+    async destroy(id) {
+        const todo = await SQTodo.findOne({ where: { id } });
+        if (todo) {
+            todo.destroy();
+        }
     }
 }
