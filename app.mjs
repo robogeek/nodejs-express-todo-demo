@@ -19,7 +19,7 @@ import {
     router as indexRouter,
     init as homeInit
 } from './routes/index.mjs';
-import { connectDB } from './models/sequlz.mjs';
+import { TodoStore } from './models/sequlz.mjs';
 
 import socketio from 'socket.io';
 
@@ -76,5 +76,5 @@ app.use('/', indexRouter);
 app.use(handle404);
 app.use(basicErrorHandler);
 
-await connectDB();
-await homeInit();
+export const todostore = await TodoStore.connect();
+await homeInit(todostore);
