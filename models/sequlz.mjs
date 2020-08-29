@@ -98,8 +98,8 @@ export class TodoStore {
     }
 
     async update(todo) {
-        const msg = await SQTodo.findOne({ where: { id: todo.id } });
-        if (!msg) {
+        const sqtodo = await SQTodo.findOne({ where: { id: todo.id } });
+        if (!sqtodo) {
             throw new Error(`No TODO found for ${todo.id}`);
         } else {
             await SQTodo.update({
