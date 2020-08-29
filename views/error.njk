@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{message}}</h1>
-<h2>{{error.status}}</h2>
-<pre>{{error.stack}}</pre>
+<h1>{{ message | escape }}</h1>
+<h2>{{ error.status | escape }}</h2>
+<pre>{{ error.stack | escape }}</pre>
 {% endblock %}
