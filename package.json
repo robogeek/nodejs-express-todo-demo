@@ -2,8 +2,13 @@
   "name": "nodejs-express-todo-demo",
   "version": "1.0.0",
   "description": "Sample TODO application written with Node.js and Express",
+  "config": {
+    "port": "4000",
+    "dbconfig": "models/sequelize-sqlite.yaml"
+  },
   "scripts": {
-    "start": "node app.mjs"
+    "env": "env",
+    "start": "cross-env PORT=${npm_package_config_port} SEQUELIZE_CONNECT=${npm_package_config_dbconfig} node app.mjs"
   },
   "repository": {
     "type": "git",
