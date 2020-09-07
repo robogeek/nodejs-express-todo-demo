@@ -8,7 +8,11 @@
   },
   "scripts": {
     "env": "env",
-    "start": "cross-env PORT=${npm_package_config_port} SEQUELIZE_CONNECT=${npm_package_config_dbconfig} node app.mjs"
+    "start": "cross-env PORT=${npm_package_config_port} SEQUELIZE_CONNECT=${npm_package_config_dbconfig} node app.mjs",
+    "docker-build": "docker --context default build -t todo-app .",
+    "docker-run": "docker --context default run --name todo-app -p 4000:80 todo-app",
+    "docker-tag": "docker --context default tag todo-app robogeek/todo-app:latest",
+    "docker-push": "docker --context default push robogeek/todo-app"
   },
   "repository": {
     "type": "git",
