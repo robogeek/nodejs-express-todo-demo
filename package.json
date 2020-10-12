@@ -4,7 +4,8 @@
   "description": "Sample TODO application written with Node.js and Express",
   "config": {
     "port": "4000",
-    "dbconfig": "models/sequelize-sqlite.yaml"
+    "dbconfig": "models/sequelize-sqlite.yaml",
+    "tagname": "first-dockerize"
   },
   "scripts": {
     "env": "env",
@@ -12,7 +13,9 @@
     "docker-build": "docker --context default build -t todo-app .",
     "docker-run": "docker --context default run --name todo-app -p 4000:80 todo-app",
     "docker-tag": "docker --context default tag todo-app robogeek/todo-app:latest",
-    "docker-push": "docker --context default push robogeek/todo-app"
+    "postdocker-tag": "docker --context default tag todo-app robogeek/todo-app:${npm_package_config_tagname}",
+    "docker-push": "docker --context default push robogeek/todo-app:latest",
+    "postdocker-push": "docker --context default push robogeek/todo-app:${npm_package_config_tagname}"
   },
   "repository": {
     "type": "git",

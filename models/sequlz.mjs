@@ -14,11 +14,12 @@ export class SQTodo extends Sequelize.Model {}
 const _todo_sequlz = Symbol('sequlz');
 
 export class TodoStore {
-    constructor(sequlz) {
-        this[_todo_sequlz] = sequlz;
+    constructor() {
+        this[_todo_sequlz] = undefined;
     }
 
-    static async connect() {
+    async connect() {
+        if (this[_todo_sequlz]) return;
         const yamltext = await fs.readFile(process.env.SEQUELIZE_CONNECT, 'utf8');
         const params = await jsyaml.safeLoad(yamltext, 'utf8');
         if (typeof process.env.SEQUELIZE_DBNAME !== 'undefined'
@@ -65,7 +66,7 @@ export class TodoStore {
         });
         await SQTodo.sync();
 
-        return new TodoStore(sequlz);
+        this[_todo_sequlz] = sequlz;
     }
 
     close() {
@@ -75,6 +76,7 @@ export class TodoStore {
 
 
     async getAll() {
+        await this.connect();
         let todos = await SQTodo.findAll();
         return todos.map(todo => {
             return (Todo.fromSQ(todo)).sanitized();
@@ -92,12 +94,14 @@ export class TodoStore {
     }
 
     async create(todo) {
+        await this.connect();
         await SQTodo.create({
             title: todo.title, body: todo.body, precedence: todo.precedence
         });
     }
 
     async update(todo) {
+        await this.connect();
         const sqtodo = await SQTodo.findOne({ where: { id: todo.id } });
         if (!sqtodo) {
             throw new Error(`No TODO found for ${todo.id}`);
@@ -111,6 +115,7 @@ export class TodoStore {
     }
 
     async destroy(id) {
+        await this.connect();
         const todo = await SQTodo.findOne({ where: { id } });
         if (todo) {
             todo.destroy();

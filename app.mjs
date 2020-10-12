@@ -76,5 +76,16 @@ app.use('/', indexRouter);
 app.use(handle404);
 app.use(basicErrorHandler);
 
-export const todostore = await TodoStore.connect();
+// This approach does not work well if the database
+// is not reachable for some reason.  With this approach
+// we have one and only one chance to connect to the database.
+// What if the database is a Docker container that has not
+// finished initializing and is therefore not usable?
+// If we instead allow the connect method to be called 
+// multiple times, it can be tried and retried until the
+// connect method succeeds.
+// export const todostore = await TodoStore.connect();
+// This approach allows us to implement the connect method
+// in a different way.
+export const todostore = new TodoStore();
 await homeInit(todostore);
