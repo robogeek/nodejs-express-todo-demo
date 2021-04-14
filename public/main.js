@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function(){
     function renderTODOS(todos) {
         empty("TODOlistGroup");
         let txt = '';
+        console.log('renderTODOS ', todos);
         for (let todo of todos) {
             console.log('render todo ', todo);
             txt += nunjucks.renderString(

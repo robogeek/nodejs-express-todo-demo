@@ -34,4 +34,7 @@ export class Todo {
         return new Todo(sqtodo.id, sqtodo.title, sqtodo.body, sqtodo.precedence);
     }
 
+    static fromFORE(sqtodo) {
+        return new Todo(sqtodo._id, sqtodo.title, sqtodo.body, sqtodo.precedence);
+    }
 }

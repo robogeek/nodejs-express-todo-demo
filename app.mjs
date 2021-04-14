@@ -20,7 +20,7 @@ import {
     router as indexRouter,
     init as homeInit
 } from './routes/index.mjs';
-import { TodoStore } from './models/sequlz.mjs';
+import { TodoStore } from './models/forerunner.mjs';
 
 
 import session from 'express-session';
