@@ -8,6 +8,7 @@ import { default as bodyParser } from 'body-parser';
 import helmet from 'helmet';
 import * as http from 'http';
 import * as path from 'path';
+import * as util from 'util';
 import { default as nunjucks } from 'nunjucks';
 import { approotdir } from './approotdir.mjs';
 const __dirname = approotdir;
@@ -21,7 +22,46 @@ import {
 } from './routes/index.mjs';
 import { TodoStore } from './models/sequlz.mjs';
 
+
+import session from 'express-session';
+import ConnectRedis from 'connect-redis';
+import redis from 'redis';
+import sessionLokiStore from 'connect-loki';
+import sessionMemoryStore from 'memorystore';
+
+var sessionStore; // This will be referred to later
+
+if (typeof process.env.REDIS_ENDPOINT !== 'undefined'
+ && process.env.REDIS_ENDPOINT !== '') {
+    const RedisStore = ConnectRedis(session);
+
+    let redisParams = { 
+        port: 6379,
+        host: process.env.REDIS_ENDPOINT,
+        // no_ready_check: true
+    };
+    if (typeof process.env.REDIS_PASSWD !== 'undefined'
+            && process.env.REDIS_PASSWD !== '') {
+        redisParams.password  = process.env.REDIS_PASSWD;
+        redisParams.auth_pass = process.env.REDIS_PASSWD;
+    }
+    console.log(`Redis SessionStore redisParams ${util.inspect(redisParams)}`);
+    sessionStore = new RedisStore({ client: redis.createClient(redisParams) });
+} else if (typeof process.env.SESSION_PATH !== 'undefined'
+            && process.env.SESSION_PATH !== '') {
+    const LokiStore = sessionLokiStore(session);
+    sessionStore = new LokiStore({ path: process.env.SESSION_PATH });
+} else {
+    const MemoryStore = sessionMemoryStore(session);
+    sessionStore = new MemoryStore({});
+}
+
+export const sessionCookieName = 'todocookie.sid';
+const sessionSecret = 'keyboard squirrel'; 
+
 import socketio from 'socket.io';
+import sharedSocketIOSession from 'express-socket.io-session';
+import redisIO from 'socket.io-redis';
 
 export const app = express();
 
@@ -37,7 +77,10 @@ server.on('request', (req, res) => {
 server.on('error', onError);
 server.on('listening', onListening);
 
-export const io = socketio(server);
+export const io = socketio(server, {
+    pingTimeout: 180000,
+    pingInterval: 25000
+});
 
 nunjucks.configure('views', {
     autoescape: true,
@@ -53,6 +96,24 @@ app.use(logger(process.env.REQUEST_LOG_FORMAT || 'dev', {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+// Use this for both Socket.io and ExpressJS sessions
+const sessionMiddleware = session({
+    store: sessionStore,
+    secret: sessionSecret,
+    resave: true,
+    saveUninitialized: true,
+    name: sessionCookieName
+});
+
+if (typeof process.env.REDIS_ENDPOINT !== 'undefined'
+ && process.env.REDIS_ENDPOINT !== '') {
+    const ioSession = sharedSocketIOSession(sessionMiddleware, {
+        autoSave: true
+    });
+    io.use(ioSession);
+    io.of('/home').use(ioSession);
+}
+app.use(sessionMiddleware);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -76,6 +137,71 @@ app.use('/', indexRouter);
 app.use(handle404);
 app.use(basicErrorHandler);
 
+
+if (typeof process.env.REDIS_ENDPOINT !== 'undefined'
+ && process.env.REDIS_ENDPOINT !== '') {
+    let adapter;
+    const options = {
+        port: 6379,
+        host: process.env.REDIS_ENDPOINT,
+    };
+    if (typeof process.env.REDIS_PASSWD !== 'undefined'
+            && process.env.REDIS_PASSWD !== '') {
+        options.password  = process.env.REDIS_PASSWD;
+        options.auth_pass = process.env.REDIS_PASSWD;
+        let redisParams = { 
+            port: 6379,
+            host: process.env.REDIS_ENDPOINT,
+            password: process.env.REDIS_PASSWD,
+            auth_pass: process.env.REDIS_PASSWD
+        };
+        options.pubClient = redis.createClient(redisParams);
+        options.subClient = redis.createClient(redisParams);
+    }
+    console.log(`REDIS redisParams ${util.inspect(redisParams)}`);
+    console.log(`REDIS options ${util.inspect(options)}`);
+    adapter = redisIO(options);
+
+    adapter.pubClient.on('connect', function() {
+        console.log(`REDIS pubClient got connect`);
+    });
+    adapter.pubClient.on('ready', function() {
+        console.log(`REDIS pubClient got ready`);
+    });
+    adapter.pubClient.on('error', function(error) {
+        console.log(`REDIS pubClient got error`, error);
+    });
+    adapter.pubClient.on('close', function() {
+        console.log(`REDIS pubClient got close`);
+    });
+    adapter.pubClient.on('reconnecting', function() {
+        console.log(`REDIS pubClient got reconnecting`);
+    });
+    adapter.pubClient.on('end', function() {
+        console.log(`REDIS pubClient got end`);
+    });
+
+    adapter.subClient.on('connect', function() {
+        console.log(`REDIS subClient got connect`);
+    });
+    adapter.subClient.on('ready', function() {
+        console.log(`REDIS subClient got ready`);
+    });
+    adapter.subClient.on('error', function(error) {
+        console.log(`REDIS subClient got error`, error);
+    });
+    adapter.subClient.on('close', function() {
+        console.log(`REDIS subClient got close`);
+    });
+    adapter.subClient.on('reconnecting', function() {
+        console.log(`REDIS subClient got reconnecting`);
+    });
+    adapter.subClient.on('end', function() {
+        console.log(`REDIS subClient got end`);
+    });
+    io.adapter(adapter);
+}
+
 // This approach does not work well if the database
 // is not reachable for some reason.  With this approach
 // we have one and only one chance to connect to the database.
@@ -89,3 +215,4 @@ app.use(basicErrorHandler);
 // in a different way.
 export const todostore = new TodoStore();
 await homeInit(todostore);
+

@@ -9,14 +9,14 @@ RUN apt-get update -y \
         apt-utils ca-certificates sqlite3
 
 RUN mkdir /app /app/models /app/public /app/routes /app/views
-COPY models/ /app/models/
+COPY models /app/models/
 COPY public/ /app/public/
 COPY routes/ /app/routes/
 COPY views/ /app/views/
-COPY *.mjs package.json /app/
+COPY *.mjs package.json wait-for-it.sh /app/
 
 WORKDIR /app
 
-RUN npm install --unsafe-perm
+RUN npm install --unsafe-perm && chmod +x wait-for-it.sh
 
 CMD [ "node", "./app.mjs" ]
